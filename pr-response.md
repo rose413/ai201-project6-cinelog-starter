@@ -21,9 +21,9 @@
 **Tradeoff acknowledged:** Defaulting to private has a real cost. Social discovery features — finding films through what others want to watch, following users, seeing trending saves — only work if there is public content to browse. A new user on a private-by-default app sees empty social feeds, which suppresses the network effects CineLog depends on for engagement. If social discovery is the primary goal, `public=True` would be recommended. However, I think trust and uninhibited use matter more at this stage, and users who want to share can opt in explicitly.
 
 ## Comment 5 — Sort order
-**My position:**
-**Reasoning:**
-**Engagement with reviewer's point:**
+**My position:** The watchlist should sort by `date_added` descending (newest first), matching the reviewer's preference and the existing behavior of `get_collection()`.
+**Reasoning:** I am optimizing for the moment a user opens their watchlist and asks "what did I want to watch next?" The most recently added film is the one that was top of mind — something they just discovered or someone just recommended. Showing it first reduces the friction between saving a film and actually watching it. Alphabetical order optimizes for scanning a large static library, which is the wrong mental model for a watchlist: users don't browse it like a catalog, they pick from it while deciding what to watch tonight.
+**Engagement with reviewer's point:** The maintainer's point is correct, and the current alphabetical sort works against that. There is a reasonable case for alphabetical: a watchlist can grow long and `A→Z` makes it easier to check whether a specific film is already saved. However, it is a search problem, not a sort problem — the right fix is a filter or search endpoint, not changing the default sort order. For the default view, date-added descending is the right choice, and it also makes the two endpoints (`/collection` and `/watchlist`) consistent with each other.
 
 ## Comment 6 — Rebase
 **What conflicted:**
