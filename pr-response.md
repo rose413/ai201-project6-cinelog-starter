@@ -1,7 +1,7 @@
 # PR Response Doc — CineLog Watchlist Feature
 
 ## AI Usage
-<!-- Fill in at the end — how you used AI tools during this project -->
+I used Claude on Comments 4 and 5 to stress-test my design arguments and ensure they were well-organized and covered potential counterarguments. I also used it to understand the repo — specifically to clarify what was in `models.py` and what each function did across the routes and services.
 
 ## Comment 1 — Rename
 **What I did:** I renamed `save_to_watchlist()` to `add_to_watchlist()` in `services/watchlist_service.py`. I also updated both call sites in `routes/watchlist/watchlist.py`: the import on line 8 (`from services.watchlist_service import add_to_watchlist, get_watchlist`) and the function call on line 32 (`entry = add_to_watchlist(...)`).
@@ -31,4 +31,46 @@
 **How I verified no conflict remains:** I verified no conflict remains by using the merge editor to confirm no conflict markers were left in any file, then ran the full test suite (`pytest tests/ -v` — 5 passed) to confirm the branch is stable.
 
 ## PR Description
-<!-- Written at the end — feature overview, design decisions, manual testing steps -->
+
+### Overview
+This PR adds a watchlist feature to CineLog. Users can save films they intend to watch later, view their full watchlist, and are protected from adding the same film twice. The feature introduces a `WatchlistEntry` model, a `watchlist_service` with `add_to_watchlist()` and `get_watchlist()`, and two REST endpoints registered under `/watchlist`.
+
+### Design Decisions
+
+**Visibility default (`public=True`):** Each `WatchlistEntry` has a `public` boolean field. The current default is `public=True`. I argued in my review response that `public=False` (private by default) is the better choice — users should opt into sharing rather than opt out of it — but I left the existing default unchanged pending maintainer sign-off, since this is a design decision that affects the social feature roadmap.
+
+**Sort order (alphabetical by title):** `get_watchlist()` currently sorts results alphabetically by `Film.title`. I argued in my review response that `date_added` descending is the better default — it surfaces the most recently saved film first, matching user intent and making the endpoint consistent with `get_collection()`. Again, I left the code as-is pending maintainer decision.
+
+### Manual Testing Steps
+
+**Setup:** ensure the app is running locally (`flask run`) and you have a valid `user_id` and at least one `film_id` in the database.
+
+1. **Add a film to the watchlist**
+   ```
+   POST /watchlist/<user_id>/add
+   Body: { "film_id": "<film_uuid>" }
+   ```
+   Expected: `201` response with the new `WatchlistEntry` as JSON (`id`, `user_id`, `film_id`, `date_added`, `public`).
+
+2. **View the watchlist**
+   ```
+   GET /watchlist/<user_id>
+   ```
+   Expected: `200` response with a JSON array of film objects, each including `date_added` and `public` fields.
+
+3. **Verify deduplication**
+   Repeat the same `POST` from step 1 with the same `film_id`.
+   Expected: the service raises `AlreadyInWatchlistError` — confirm the endpoint returns a `4xx` error rather than creating a duplicate entry.
+
+4. **Verify nonexistent film handling**
+   ```
+   POST /watchlist/<user_id>/add
+   Body: { "film_id": "00000000-0000-0000-0000-000000000000" }
+   ```
+   Expected: `FilmNotFoundError` is raised — confirm the endpoint returns a `4xx` error.
+
+5. **Run the automated test suite**
+   ```
+   pytest tests/ -v
+   ```
+   Expected: 5 passed, 0 failed.
