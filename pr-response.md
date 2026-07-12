@@ -74,3 +74,6 @@ This PR adds a watchlist feature to CineLog. Users can save films they intend to
    pytest tests/ -v
    ```
    Expected: 5 passed, 0 failed.
+
+## Screenshot
+![alt text](<Screenshot 2026-07-12 163823.png>)
