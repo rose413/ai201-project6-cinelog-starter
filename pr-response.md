@@ -16,9 +16,9 @@
 **How I verified:** I ran `pytest tests/test_watchlist.py -v` — 1 test collected, 1 passed. Then, I ran the full test suite and confirmed all tests passed.
 
 ## Comment 4 — Default visibility
-**My position:**
-**Reasoning:**
-**Tradeoff acknowledged:**
+**My position:** The default should be `public=False` (private).
+**Reasoning:** I am optimizing a user who knows their watchlist is private will add films freely — including niche, embarrassing, or personal choices — without self-censoring for an audience. A watchlist is a personal planning tool. Defaulting to `public=True` means every entry is shared without the user ever explicitly consenting to that. The burden should be on the user to opt into sharing, not to opt out of privacy.
+**Tradeoff acknowledged:** Defaulting to private has a real cost. Social discovery features — finding films through what others want to watch, following users, seeing trending saves — only work if there is public content to browse. A new user on a private-by-default app sees empty social feeds, which suppresses the network effects CineLog depends on for engagement. If social discovery is the primary goal, `public=True` would be recommended. However, I think trust and uninhibited use matter more at this stage, and users who want to share can opt in explicitly.
 
 ## Comment 5 — Sort order
 **My position:**
