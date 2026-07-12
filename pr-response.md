@@ -26,9 +26,9 @@
 **Engagement with reviewer's point:** The maintainer's point is correct, and the current alphabetical sort works against that. There is a reasonable case for alphabetical: a watchlist can grow long and `A→Z` makes it easier to check whether a specific film is already saved. However, it is a search problem, not a sort problem — the right fix is a filter or search endpoint, not changing the default sort order. For the default view, date-added descending is the right choice, and it also makes the two endpoints (`/collection` and `/watchlist`) consistent with each other.
 
 ## Comment 6 — Rebase
-**What conflicted:**
-**How I resolved it:**
-**How I verified no conflict remains:**
+**What conflicted:** The `.gitignore` file differed between the main branch and `feature/watchlist`. I also noticed that the `WatchlistEntry` class was missing from `models.py`, though this was not a merge conflict — it was deleted on main during the UUID migration.
+**How I resolved it:** I resolved it by examining the conflicting lines and saw that both versions were similar, except the main branch had an extra line. I chose to keep the main branch version since it had the more complete content. I also manually restored the `WatchlistEntry` model to `models.py` with `film_id` updated to `String(36)` to match the UUID refactor.
+**How I verified no conflict remains:** I verified no conflict remains by using the merge editor to confirm no conflict markers were left in any file, then ran the full test suite (`pytest tests/ -v` — 5 passed) to confirm the branch is stable.
 
 ## PR Description
 <!-- Written at the end — feature overview, design decisions, manual testing steps -->
